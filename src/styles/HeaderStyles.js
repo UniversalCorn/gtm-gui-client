@@ -8,6 +8,7 @@ const styles = {
     borderBottom: "2px solid #444",
     paddingBottom: "10px",
     marginBottom: "20px",
+    flexWrap: "wrap",
   },
   titleContainer: {
     display: "flex",
@@ -25,9 +26,13 @@ const styles = {
   buttonContainer: {
     display: "flex",
     gap: "10px",
+    display: "flex",
+    flexWrap: "wrap",
+    marginBottom: "7px",
+    marginTop: "7px",
   },
   button: {
-    padding: "10px 20px",
+    padding: "10px 12px",
     backgroundColor: "#3498db",
     color: "#fff",
     border: "none",
@@ -37,10 +42,13 @@ const styles = {
     transition: "background-color 0.3s",
   },
   buttonSetPassword: {
-    backgroundColor: "#7f00ff", // Blue color for set access level button
+    backgroundColor: "#3498db", // Blue color for set access level button
   },
   buttonSetAccessLevel: {
     backgroundColor: "#3498db", // Blue color for set access level button
+  },
+  buttonCreateUser: {
+    backgroundColor: "#7f00ff", // Violet color for create button
   },
   buttonDelete: {
     backgroundColor: "#e74c3c", // Red color for delete button
@@ -51,7 +59,7 @@ const styles = {
   buttonLogout: {
     backgroundColor: "#7f8c8d", // Gray color for logout button
   },
-  buttonWorkstation: {
+  buttonState: {
     backgroundColor: "#2ecc71", // Green color for workstation button
   },
 };

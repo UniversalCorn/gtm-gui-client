@@ -5,7 +5,10 @@ import Cookies from "js-cookie";
 import settings from "./settings/settings.json";
 import styles from "./styles/HeaderStyles";
 
-const Header = ({ openModal, openDeleteUserModal, openSetAccessLevelModal, openSetPasswordModal, fetchWorkstations, fetchHelpData }) => {
+const Header = ({ 
+    openModal, openDeleteUserModal, openSetAccessLevelModal, openSetPasswordModal, 
+    fetchWorkstations, fetchHelpData, fetchShowQueue 
+}) => {
   const navigate = useNavigate();
   const username = Cookies.get("username");
 
@@ -40,7 +43,7 @@ const Header = ({ openModal, openDeleteUserModal, openSetAccessLevelModal, openS
 
         {/* Create User Button */}
         <button
-          style={styles.button}
+          style={{ ...styles.button, ...styles.buttonCreateUser }}
           onClick={openModal} // Open modal for Create User
         >
           Create User
@@ -53,7 +56,27 @@ const Header = ({ openModal, openDeleteUserModal, openSetAccessLevelModal, openS
         >
           Delete User
         </button>
+      </div>
 
+      <div style={styles.buttonContainer}>
+        {/* Workstation Button */}
+        <button
+          style={{ ...styles.button, ...styles.buttonState }}
+          onClick={fetchWorkstations} // Fetch workstations data
+        >
+          Workstation
+        </button>
+
+        {/* Show Queue Button */}
+        <button
+          style={{ ...styles.button, ...styles.buttonState }}
+          onClick={fetchShowQueue} // Open modal for Create User
+        >
+          Tasks Queue
+        </button>
+      </div>
+
+      <div style={styles.buttonContainer}>
         {/* Help Button */}
         <button
           style={{ ...styles.button, ...styles.buttonHelp }}
@@ -68,14 +91,6 @@ const Header = ({ openModal, openDeleteUserModal, openSetAccessLevelModal, openS
           onClick={handleLogout} // Handle logout
         >
           Log Out
-        </button>
-
-        {/* Workstation Button */}
-        <button
-          style={{ ...styles.button, ...styles.buttonWorkstation }}
-          onClick={fetchWorkstations} // Fetch workstations data
-        >
-          Workstation
         </button>
       </div>
     </header>

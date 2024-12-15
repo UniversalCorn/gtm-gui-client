@@ -13,6 +13,7 @@ function App() {
   const [experiments, setExperiments] = useState([/* your experiments data here */]);
   const [workstations, setWorkstations] = useState(null);
   const [helpData, setHelpData] = useState(null);
+  const [showQueueData, setShowQueueData] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSetAccessLevelModalOpen, setIsSetAccessLevelModalOpen] = useState(false);
@@ -194,6 +195,7 @@ function App() {
       console.log("Workstations data:", data);
       setWorkstations(data.result);  // Update the state with the workstations data
       setHelpData(null);  // Clear help data when fetching workstations
+      setShowQueueData(null); // Clear show queue data when fetching workstations
     } catch (error) {
       console.error("Error fetching workstations:", error);
       alert("An error occurred while fetching workstations.");
@@ -216,9 +218,35 @@ function App() {
       console.log("Help data:", data);
       setHelpData(data.result);  // Set the help data
       setWorkstations(null);  // Clear workstations data when fetching help
+      setShowQueueData(null); // Clear show queue data when fetching help
     } catch (error) {
       console.error("Error fetching help data:", error);
       alert("An error occurred while fetching help data.");
+    }
+  };
+
+  // Fetch Show Queue data
+  const fetchShowQueue = async () => {
+    const token = Cookies.get("token");
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/showQueue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (response.ok) {
+        const data = await response.text(); // The result is a string
+        setShowQueueData(data); // Store the result
+        setHelpData(null); // Clear help data when fetching show queue
+        setWorkstations(null); // Clear workstations data when fetching show queue
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to fetch show queue data."}`);
+      }
+    } catch (error) {
+      console.error("Error fetching show queue:", error);
+      alert("An error occurred while fetching the show queue data.");
     }
   };
 
@@ -232,13 +260,18 @@ function App() {
       <Header
         openModal={openCreateUserModal}
         fetchWorkstations={fetchWorkstations}
-        fetchHelpData={fetchHelpData}  // Pass fetchHelpData to Header
+        fetchHelpData={fetchHelpData}
         openDeleteUserModal={openDeleteUserModal}
         openSetAccessLevelModal={openSetAccessLevelModal}
         openSetPasswordModal={openSetPasswordModal}
+        fetchShowQueue={fetchShowQueue} // Pass the fetchShowQueue function to Header
       />
 
-      <Body data={workstations || helpData || experiments} />
+      <Body data={showQueueData || workstations || helpData || experiments} 
+        workstations={workstations}
+        helpData={helpData}
+        showQueueData={showQueueData}
+      /> {/* Render Show Queue data in Body */}
 
       <CreateUserModal
         isOpen={isCreateModalOpen}

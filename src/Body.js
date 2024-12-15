@@ -2,7 +2,7 @@
 import React from "react";
 import styles from "./styles/BodyStyles";
 
-function Body({ data }) {
+function Body({ data, workstations, helpData, showQueueData }) {
 
   // Function to render the table dynamically based on the data structure
   const renderTable = (data) => {
@@ -115,10 +115,28 @@ function Body({ data }) {
     return <p>No data available</p>;
   };
 
+  // Check if the showQueueData is available and is a string
+  const renderShowQueueData = () => {
+    if (typeof showQueueData === "string" && showQueueData.trim().length > 0) {
+      return <pre>{JSON.parse(showQueueData).result.join("\n\n")}</pre>; // Display the showQueueData as text
+    }
+    return null; // Return null if showQueueData is not available
+  };
+
+  // Determine the correct header based on available data
+  const determineHeader = () => {
+    if (workstations) return "Workstations Details";
+    if (helpData) return "Help Details";
+    if (showQueueData) return "Queue Details";
+    return "No Data Available";
+  };
+
   return (
     <main>
-      <h2 style={{ fontSize: "1.5rem", marginBottom: "10px" }}>{Array.isArray(data) ? "Workstations" : "Help"} Details</h2>
-      {renderTable(data)} {/* Render the table dynamically */}
+      <h2 style={{ fontSize: "1.5rem", marginBottom: "10px" }}>{determineHeader()}</h2>
+      
+      {renderShowQueueData() || renderTable(data)} {/* Show queue data or table */}
+
     </main>
   );
 }
