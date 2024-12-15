@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import settings from "./settings/settings.json";
 
-function Header({ openModal }) {
+function Header({ openModal, fetchWorkstations, fetchHelpData }) {
   const navigate = useNavigate();
   const username = Cookies.get("username");
+
+  console.log('TOKEN:', Cookies.get("token"));
 
   const handleLogout = async () => {
     try {
@@ -68,11 +70,14 @@ function Header({ openModal }) {
       fontSize: "1rem",
       transition: "background-color 0.3s",
     },
-    buttonDelete: {
+    buttonHelp: {
       backgroundColor: "#e74c3c",
     },
     buttonLogout: {
       backgroundColor: "#7f8c8d",
+    },
+    buttonWorkstation: {
+      backgroundColor: "#2ecc71",  // Green button
     },
   };
 
@@ -91,13 +96,14 @@ function Header({ openModal }) {
         >
           Add Experiment
         </button>
-        {/* <button
-          style={{ ...styles.button, ...styles.buttonDelete }}
+        <button
+          style={{ ...styles.button, ...styles.buttonHelp }}
           onMouseOver={(e) => (e.target.style.backgroundColor = "#c0392b")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#e74c3c")}
+          onClick={fetchHelpData} // Fetch help
         >
-          Delete Experiment
-        </button> */}
+          Help
+        </button>
         <button
           style={{ ...styles.button, ...styles.buttonLogout }}
           onMouseOver={(e) => (e.target.style.backgroundColor = "#95a5a6")}
@@ -105,6 +111,14 @@ function Header({ openModal }) {
           onClick={handleLogout} // Handle logout
         >
           Log Out
+        </button>
+        <button
+          style={{ ...styles.button, ...styles.buttonWorkstation }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#27ae60")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#2ecc71")}
+          onClick={fetchWorkstations} // Fetch workstations
+        >
+          Workstation
         </button>
       </div>
     </header>
