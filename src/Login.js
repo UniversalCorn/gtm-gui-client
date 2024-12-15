@@ -1,40 +1,54 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import settings from './settings/settings.json';
+import settings from "./settings/settings.json";
+import ErrorPopup from "./ErrorPopup";
 
 function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (login.trim() && password.trim()) {
       try {
-        const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username: login, password: password }),
-        });
+        const response = await fetch(
+          `http://${settings.serverIP}:${settings.serverPort}/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username: login, password: password }),
+          }
+        );
 
         const data = await response.json();
 
-        if ((data.result)) {
+        if (data.result) {
           Cookies.set("token", data.token);
           Cookies.set("username", login);
           navigate("/app");
         } else {
-          alert(data.message);
+          setPopupMessage(data.message); // Set error message for the popup
+          setIsPopupOpen(true); // Open the popup
         }
       } catch (error) {
         console.error("Error logging in:", error);
-        alert("An error occurred. Please try again.");
+        setPopupMessage("An error occurred. Please try again."); // General error message
+        setIsPopupOpen(true); // Open the popup
       }
     } else {
-      alert("Please enter both login and password.");
+      setPopupMessage("Please enter both login and password."); // Validation error
+      setIsPopupOpen(true); // Open the popup
     }
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setPopupMessage("");
   };
 
   const styles = {
@@ -99,7 +113,12 @@ function Login() {
         onChange={(e) => setPassword(e.target.value)}
         style={styles.input}
       />
-      <button style={styles.button} onClick={handleLogin}>Login</button>
+      <button style={styles.button} onClick={handleLogin}>
+        Login
+      </button>
+
+      {/* TODO: make sure message is passed when credentials are wrong */}
+      <ErrorPopup isOpen={isPopupOpen} message={popupMessage ? popupMessage : 'Wrong login or password'} onClose={closePopup} />
     </div>
   );
 }

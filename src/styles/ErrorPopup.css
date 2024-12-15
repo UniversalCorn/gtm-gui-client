@@ -1,0 +1,69 @@
+.error-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .error-popup-content {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    animation: slideIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Stack text and button vertically */
+    align-items: center;    /* Center content horizontally */
+    justify-content: center; /* Align content vertically */
+  }
+  
+  .error-popup-message {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  .error-popup-close {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+  
+  .error-popup-close:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Animation for fading in the background */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Animation for sliding in the popup */
+  @keyframes slideIn {
+    0% {
+      transform: translateY(-30px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
