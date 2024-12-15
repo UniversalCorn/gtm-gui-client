@@ -1,46 +1,102 @@
 import React, { useState, useEffect } from "react";
-import AddExperimentModal from "./AddExperimentModal";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import settings from "./settings/settings.json";
-import Header from "./Header"; // Import Header component
-import Body from "./Body"; // Import Body component
+import Header from "./Header";
+import Body from "./Body";
+import CreateUserModal from "./CreateUserModal";
 
 function App() {
-  const navigate = useNavigate();  // Initialize navigate hook
+  const navigate = useNavigate();
   const username = Cookies.get("username");
 
   const [experiments, setExperiments] = useState([/* your experiments data here */]);
-  const [workstations, setWorkstations] = useState(null);  // State to store workstations data
-  const [helpData, setHelpData] = useState(null);  // State to store help data
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [experimentCode, setExperimentCode] = useState("");
+  const [workstations, setWorkstations] = useState(null);
+  const [helpData, setHelpData] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openCreateUserModal = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const openDeleteUserModal = () => {
+    setIsDeleteModalOpen(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    setExperimentCode("");
+    setIsCreateModalOpen(false);
+    setIsDeleteModalOpen(false);
   };
 
-  const addExperiment = () => {
-    if (experimentCode.trim() === "") {
-      alert("Please enter the code for the experiment.");
+  const createUser = async (userData) => {
+    const { username, password, accessLevel } = userData;
+    const finalAccessLevel = Number(accessLevel) || 4;
+    const token = Cookies.get("token");
+
+    if (!token) {
+      alert("Token not found. Please log in again.");
       return;
     }
 
-    const newExperiment = {
-      id: experiments.length + 1,
-      name: `Experiment ${experiments.length + 1}`,
-      queuePosition: experiments.filter((exp) => exp.status === "Queued").length + 1,
-      allocatedResources: "2 GPU, 8 GB RAM",
-      status: "Queued",
-      startTime: "Not started",
-    };
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/createUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUsername: username,
+          password,
+          accessLevel: finalAccessLevel,
+          token,
+        }),
+      });
 
-    setExperiments([...experiments, newExperiment]);
+      if (response.ok) {
+        const responseData = await response.json();
+        alert("User created successfully!");
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to create user."}`);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("An error occurred while creating the user.");
+    }
+
+    closeModal();
+  };
+
+  const deleteUser = async (userData) => {
+    const { username } = userData;
+    const token = Cookies.get("token");
+
+    if (!token) {
+      alert("Token not found. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/deleteUser`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUsername: username,
+          token,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        alert("User deleted successfully!");
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to delete user."}`);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert("An error occurred while deleting the user.");
+    }
+
     closeModal();
   };
 
@@ -90,26 +146,41 @@ function App() {
   // Fetch help data when the component is mounted
   useEffect(() => {
     fetchHelpData();  // Fetch help data when the component is mounted
-  }, []);  // Empty dependency array ensures this runs only once
+  }, []);
 
   return (
     <div style={{ backgroundColor: "#1e1e1e", color: "#f5f5f5", minHeight: "100vh", fontFamily: "'Roboto', sans-serif", padding: "20px" }}>
       <Header
-        openModal={openModal}
+        openModal={openCreateUserModal}
         fetchWorkstations={fetchWorkstations}
         fetchHelpData={fetchHelpData}  // Pass fetchHelpData to Header
+        openDeleteUserModal={openDeleteUserModal}
       />
-      
-      {/* Pass workstations or help data to Body */}
+
       <Body data={workstations || helpData || experiments} />
 
-      {/* Use the modal component */}
-      <AddExperimentModal
-        isOpen={isModalOpen}
-        experimentCode={experimentCode}
-        setExperimentCode={setExperimentCode}
-        addExperiment={addExperiment}
-        closeModal={closeModal}
+      <CreateUserModal
+        isOpen={isCreateModalOpen}
+        onClose={closeModal}
+        onCreateUser={createUser}
+        fieldsConfig={[
+          { name: "username", label: "Username", type: "text", required: true },
+          { name: "password", label: "Password", type: "password", required: true },
+          { name: "accessLevel", label: "Access Level", type: "text", required: true, defaultValue: "4" },
+        ]}
+        mode="create"
+        title="Create User"
+      />
+
+      <CreateUserModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeModal}
+        onCreateUser={deleteUser}
+        fieldsConfig={[
+          { name: "username", label: "Username", type: "text", required: true },
+        ]}
+        mode="delete"
+        title="Delete User"
       />
     </div>
   );
