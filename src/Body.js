@@ -2,7 +2,7 @@
 import React from "react";
 import styles from "./styles/BodyStyles";
 
-function Body({ data, workstations, helpData, showQueueData }) {
+function Body({ data, workstations, helpData, showQueueData, finishedTasksData }) {
 
   // Function to render the table dynamically based on the data structure
   const renderTable = (data) => {
@@ -117,10 +117,18 @@ function Body({ data, workstations, helpData, showQueueData }) {
 
   // Check if the showQueueData is available and is a string
   const renderShowQueueData = () => {
-    if (typeof showQueueData === "string" && showQueueData.trim().length > 0) {
-      return <pre>{JSON.parse(showQueueData).result.join("\n\n")}</pre>; // Display the showQueueData as text
-    }
-    return null; // Return null if showQueueData is not available
+        if (typeof showQueueData === "string" && showQueueData.trim().length > 0) {
+            return <pre>{JSON.parse(showQueueData).result.join("\n\n")}</pre>; // Display the showQueueData as text
+        }
+    return null;
+  };
+
+  // Function to render finished tasks data
+  const renderFinishedTasks = () => {
+        if (typeof finishedTasksData === "string" && finishedTasksData.trim().length > 0) {
+            return <pre>{JSON.parse(finishedTasksData).result.join("\n\n")}</pre>;
+        }
+        return null;
   };
 
   // Determine the correct header based on available data
@@ -128,6 +136,7 @@ function Body({ data, workstations, helpData, showQueueData }) {
     if (workstations) return "Workstations Details";
     if (helpData) return "Help Details";
     if (showQueueData) return "Queue Details";
+    if (finishedTasksData) return "Finished Tasks";
     return "No Data Available";
   };
 
@@ -135,7 +144,7 @@ function Body({ data, workstations, helpData, showQueueData }) {
     <main>
       <h2 style={{ fontSize: "1.5rem", marginBottom: "10px" }}>{determineHeader()}</h2>
       
-      {renderShowQueueData() || renderTable(data)} {/* Show queue data or table */}
+      {renderFinishedTasks() || renderShowQueueData() || renderTable(data)} {/* Show queue data or table */}
 
     </main>
   );

@@ -7,7 +7,7 @@ import styles from "./styles/HeaderStyles";
 
 const Header = ({ 
     openModal, openDeleteUserModal, openSetAccessLevelModal, openSetPasswordModal, 
-    fetchWorkstations, fetchHelpData, fetchShowQueue 
+    fetchWorkstations, fetchHelpData, fetchShowQueue, fetchShowFinishedTasks
 }) => {
   const navigate = useNavigate();
   const username = Cookies.get("username");
@@ -70,9 +70,17 @@ const Header = ({
         {/* Show Queue Button */}
         <button
           style={{ ...styles.button, ...styles.buttonState }}
-          onClick={fetchShowQueue} // Open modal for Create User
+          onClick={fetchShowQueue} // Open modal for Show Queue
         >
           Tasks Queue
+        </button>
+
+        {/* Show Finished Tasks Button */}
+        <button
+          style={{ ...styles.button, ...styles.buttonState }}
+          onClick={fetchShowFinishedTasks} // Open modal for Show Finished Tasks
+        >
+          Finished Tasks
         </button>
       </div>
 

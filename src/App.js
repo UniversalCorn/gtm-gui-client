@@ -14,6 +14,7 @@ function App() {
   const [workstations, setWorkstations] = useState(null);
   const [helpData, setHelpData] = useState(null);
   const [showQueueData, setShowQueueData] = useState(null);
+  const [finishedTasksData, setfinishedTasksData] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSetAccessLevelModalOpen, setIsSetAccessLevelModalOpen] = useState(false);
@@ -196,6 +197,7 @@ function App() {
       setWorkstations(data.result);  // Update the state with the workstations data
       setHelpData(null);  // Clear help data when fetching workstations
       setShowQueueData(null); // Clear show queue data when fetching workstations
+      setfinishedTasksData(null); // Clear finished tasks data when fetching show queue
     } catch (error) {
       console.error("Error fetching workstations:", error);
       alert("An error occurred while fetching workstations.");
@@ -219,6 +221,7 @@ function App() {
       setHelpData(data.result);  // Set the help data
       setWorkstations(null);  // Clear workstations data when fetching help
       setShowQueueData(null); // Clear show queue data when fetching help
+      setfinishedTasksData(null); // Clear finished tasks data when fetching show queue
     } catch (error) {
       console.error("Error fetching help data:", error);
       alert("An error occurred while fetching help data.");
@@ -240,6 +243,7 @@ function App() {
         setShowQueueData(data); // Store the result
         setHelpData(null); // Clear help data when fetching show queue
         setWorkstations(null); // Clear workstations data when fetching show queue
+        setfinishedTasksData(null); // Clear finished tasks data when fetching show queue
       } else {
         const error = await response.json();
         alert(`Error: ${error.message || "Failed to fetch show queue data."}`);
@@ -247,6 +251,32 @@ function App() {
     } catch (error) {
       console.error("Error fetching show queue:", error);
       alert("An error occurred while fetching the show queue data.");
+    }
+  };
+
+  // Fetch finished tasks data
+  const fetchShowFinishedTasks = async () => {
+    const token = Cookies.get("token");
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/showFinishedTasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      if (response.ok) {
+        const data = await response.text();
+        setfinishedTasksData(data); // Store the result
+        setHelpData(null); // Clear other data
+        setShowQueueData(null);
+        setWorkstations(null);
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to fetch finished tasks."}`);
+      }
+    } catch (error) {
+      console.error("Error fetching finished tasks:", error);
+      alert("An error occurred while fetching finished tasks.");
     }
   };
 
@@ -264,14 +294,17 @@ function App() {
         openDeleteUserModal={openDeleteUserModal}
         openSetAccessLevelModal={openSetAccessLevelModal}
         openSetPasswordModal={openSetPasswordModal}
-        fetchShowQueue={fetchShowQueue} // Pass the fetchShowQueue function to Header
+        fetchShowQueue={fetchShowQueue}
+        fetchShowFinishedTasks={fetchShowFinishedTasks} // Pass fetchShowFinishedTasks to Header
       />
 
-      <Body data={showQueueData || workstations || helpData || experiments} 
+      <Body
+        data={showQueueData || workstations || helpData || finishedTasksData} 
         workstations={workstations}
         helpData={helpData}
         showQueueData={showQueueData}
-      /> {/* Render Show Queue data in Body */}
+        finishedTasksData={finishedTasksData} // Pass the finished tasks data to Body
+      />
 
       <CreateUserModal
         isOpen={isCreateModalOpen}
