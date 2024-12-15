@@ -1,5 +1,4 @@
-// src/App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddExperimentModal from "./AddExperimentModal";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
@@ -12,7 +11,6 @@ function App() {
   const username = Cookies.get("username");
 
   const [experiments, setExperiments] = useState([/* your experiments data here */]);
-
   const [workstations, setWorkstations] = useState(null);  // State to store workstations data
   const [helpData, setHelpData] = useState(null);  // State to store help data
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,6 +86,11 @@ function App() {
       alert("An error occurred while fetching help data.");
     }
   };
+
+  // Fetch help data when the component is mounted
+  useEffect(() => {
+    fetchHelpData();  // Fetch help data when the component is mounted
+  }, []);  // Empty dependency array ensures this runs only once
 
   return (
     <div style={{ backgroundColor: "#1e1e1e", color: "#f5f5f5", minHeight: "100vh", fontFamily: "'Roboto', sans-serif", padding: "20px" }}>
