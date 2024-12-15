@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import settings from "./settings/settings.json";
 import styles from "./styles/HeaderStyles";
 
-const Header = ({ openModal, openDeleteUserModal, fetchWorkstations, fetchHelpData }) => {
+const Header = ({ openModal, openDeleteUserModal, openSetAccessLevelModal, openSetPasswordModal, fetchWorkstations, fetchHelpData }) => {
   const navigate = useNavigate();
   const username = Cookies.get("username");
 
@@ -22,6 +22,22 @@ const Header = ({ openModal, openDeleteUserModal, fetchWorkstations, fetchHelpDa
         <p style={styles.username}>Logged in as: {username}</p>
       </div>
       <div style={styles.buttonContainer}>
+        {/* Set Password Button */}
+        <button
+          style={{ ...styles.button, ...styles.buttonSetPassword }}
+          onClick={openSetPasswordModal} // Open modal for Create User
+        >
+          Set Password
+        </button>
+
+        {/* Set Access Level Button */}
+        <button
+          style={{ ...styles.button, ...styles.buttonSetAccessLevel }}
+          onClick={openSetAccessLevelModal} // Open modal for Create User
+        >
+          Set Access Level
+        </button>
+
         {/* Create User Button */}
         <button
           style={styles.button}

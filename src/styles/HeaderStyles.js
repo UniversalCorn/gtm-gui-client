@@ -36,6 +36,12 @@ const styles = {
     fontSize: "1rem",
     transition: "background-color 0.3s",
   },
+  buttonSetPassword: {
+    backgroundColor: "#7f00ff", // Blue color for set access level button
+  },
+  buttonSetAccessLevel: {
+    backgroundColor: "#3498db", // Blue color for set access level button
+  },
   buttonDelete: {
     backgroundColor: "#e74c3c", // Red color for delete button
   },

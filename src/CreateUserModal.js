@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function CreateUserModal({ isOpen, onClose, onCreateUser, fieldsConfig, mode, title }) {
+function CreateUserModal({ isOpen, onClose, onCreateUser, fieldsConfig, mode, title, buttonTitle }) {
   const initialFormState = fieldsConfig.reduce((acc, field) => {
     acc[field.name] = field.defaultValue || "";
     return acc;
@@ -56,7 +56,7 @@ function CreateUserModal({ isOpen, onClose, onCreateUser, fieldsConfig, mode, ti
             onClick={handleOk}
             disabled={!isValid}
           >
-            {mode === "create" ? "Create User" : "Delete User"}
+            { buttonTitle }
           </button>
           <button
             style={{ ...styles.button, ...styles.buttonClose }}

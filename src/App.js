@@ -15,6 +15,8 @@ function App() {
   const [helpData, setHelpData] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSetAccessLevelModalOpen, setIsSetAccessLevelModalOpen] = useState(false);
+  const [isSetPasswordModalOpen, setIsSetPasswordModalOpen] = useState(false);
 
   const openCreateUserModal = () => {
     setIsCreateModalOpen(true);
@@ -24,9 +26,19 @@ function App() {
     setIsDeleteModalOpen(true);
   };
 
+  const openSetAccessLevelModal = () => {
+    setIsSetAccessLevelModalOpen(true);
+  };
+
+  const openSetPasswordModal = () => {
+    setIsSetPasswordModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsCreateModalOpen(false);
     setIsDeleteModalOpen(false);
+    setIsSetAccessLevelModalOpen(false);
+    setIsSetPasswordModalOpen(false);
   };
 
   const createUser = async (userData) => {
@@ -100,6 +112,73 @@ function App() {
     closeModal();
   };
 
+  const setAccessLevel = async (userData) => {
+    const { username, newAccessLevel } = userData;
+    const token = Cookies.get("token");
+  
+    if (!token) {
+      alert("Token not found. Please log in again.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/setAccessLevel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUsername: username,
+          newAccessLevel: parseInt(newAccessLevel, 10),
+          token,
+        }),
+      });
+  
+      if (response.ok) {
+        alert("Access level updated successfully!");
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to update access level."}`);
+      }
+    } catch (error) {
+      console.error("Error updating access level:", error);
+      alert("An error occurred while updating the access level.");
+    }
+  
+    closeModal();
+  };
+  
+  const setPassword = async (userData) => {
+    const { password } = userData;
+    const token = Cookies.get("token");
+  
+    if (!token) {
+      alert("Token not found. Please log in again.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://${settings.serverIP}:${settings.serverPort}/setPassword`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          password
+        }),
+      });
+  
+      if (response.ok) {
+        alert("Password updated successfully!");
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.message || "Failed to update password."}`);
+      }
+    } catch (error) {
+      console.error("Error updating password:", error);
+      alert("An error occurred while updating the password.");
+    }
+  
+    closeModal();
+  };
+
   // Fetch workstations data
   const fetchWorkstations = async () => {
     try {
@@ -155,6 +234,8 @@ function App() {
         fetchWorkstations={fetchWorkstations}
         fetchHelpData={fetchHelpData}  // Pass fetchHelpData to Header
         openDeleteUserModal={openDeleteUserModal}
+        openSetAccessLevelModal={openSetAccessLevelModal}
+        openSetPasswordModal={openSetPasswordModal}
       />
 
       <Body data={workstations || helpData || experiments} />
@@ -170,6 +251,7 @@ function App() {
         ]}
         mode="create"
         title="Create User"
+        buttonTitle="Create User"
       />
 
       <CreateUserModal
@@ -181,6 +263,32 @@ function App() {
         ]}
         mode="delete"
         title="Delete User"
+        buttonTitle="Delete User"
+      />
+
+      <CreateUserModal
+        isOpen={isSetAccessLevelModalOpen}
+        onClose={closeModal}
+        onCreateUser={setAccessLevel} // Pass the function to handle request
+        fieldsConfig={[
+          { name: "username", label: "Username", type: "text", required: true },
+          { name: "newAccessLevel", label: "New Access Level", type: "text", required: true },
+        ]}
+        mode="setAccessLevel"
+        title="Set Access Level"
+        buttonTitle="Set Access Level"
+      />
+
+      <CreateUserModal
+        isOpen={isSetPasswordModalOpen}
+        onClose={closeModal}
+        onCreateUser={setPassword} // Pass the function to handle request
+        fieldsConfig={[
+          { name: "password", label: "New Password", type: "password", required: true },
+        ]}
+        mode="setPassword"
+        title="Set Password"
+        buttonTitle="Set Password"
       />
     </div>
   );
